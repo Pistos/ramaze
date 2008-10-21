@@ -35,6 +35,15 @@ select {
   border: 1px solid black;
 }
 
+#add-form {
+    border: 0px;
+    border-collapse: collapse;
+}
+
+#error-message {
+    color: #ff0000;
+}
+
 /* Add */
 
 form#new_paste {

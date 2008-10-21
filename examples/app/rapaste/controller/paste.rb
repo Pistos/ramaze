@@ -12,6 +12,10 @@ class PasteController < Ramaze::Controller
   helper :formatting, :sequel, :aspect
   layout :layout
   deny_layout :plain, :save_theme
+  
+  def index
+    @session_id = request.cookies[ '_ramaze_session_id' ]
+  end
 
   def list(start = 1)
     ordered = Paste.order(:created.desc)
@@ -34,10 +38,27 @@ class PasteController < Ramaze::Controller
     syntax, text = request[:syntax, :text]
 
     if request.post? and text and Paste::SYNTAX_LIST[syntax]
-      paste = Paste.create :syntax => syntax,
-        :text => text,
-        :created => Time.now
-      redirect R(:/, paste.id)
+      session_id = request.cookies[ '_ramaze_session_id' ]
+      captcha_answer = request[ 'humanity' ]
+      captcha_passed = false
+      begin
+        open( "http://captchator.com/captcha/check_answer/#{session_id}/#{captcha_answer}" ) do |http|
+          captcha_passed = ( http.read.strip == '1' )
+        end
+      rescue Exception => e
+        Ramaze::Log.error e
+        # Ignore error and proceed
+      end
+      if captcha_passed
+        paste = Paste.create :syntax => syntax,
+          :text => text,
+          :created => Time.now
+        redirect R(:/, paste.id)
+      else
+        flash[ :saved_text ] = text
+        flash[ :error_message ] = "You failed to prove your humanity."
+        Ramaze::Log.warn "Captcha failed."
+      end
     end
 
     redirect_referrer

@@ -1,9 +1,30 @@
 <form id="new_paste" action="/save" method="POST">
-  <textarea name="text"></textarea>
-  <select name="syntax">
-    <?r Paste::SYNTAX_LIST.each do |value, name| ?>
-      <option value="#{value}">#{name || value}</option>
-    <?r end ?>
-  </select>
-  <input type="submit" />
+  <textarea name="text">#{flash[ :saved_text ]}</textarea>
+  
+  <input type="hidden" name="email" value=""/>
+  
+  <table id="add-form">
+    <tr>
+      <td>Syntax:</td>
+      <td>
+        <select name="syntax">
+          <?r Paste::SYNTAX_LIST.each do |value, name| ?>
+            <option value="#{value}">#{name || value}</option>
+          <?r end ?>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td>Challenge:</td>
+      <td><img src="http://captchator.com/captcha/image/#{@session_id}"/></td>
+    </tr>
+    <tr>
+      <td>Verification:</td>
+      <td><input type="text" name="humanity" size="8"/></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><input type="submit" /> <span id="error-message">#{flash[ :error_message ]}</span></td>
+    </tr>
+  </table>
 </form>

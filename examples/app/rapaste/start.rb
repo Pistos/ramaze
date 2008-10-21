@@ -4,6 +4,7 @@ require 'tmpdir'
 require 'ramaze'
 require 'sequel'
 require 'uv'
+require 'open-uri'
 
 Ramaze::Log.debug "Initializing UltraViolet..."
 

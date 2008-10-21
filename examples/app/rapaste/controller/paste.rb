@@ -35,30 +35,36 @@ class PasteController < Ramaze::Controller
   end
 
   def save
-    syntax, text = request[:syntax, :text]
+    syntax, text, email = request[:syntax, :text, :email]
 
     if request.post? and text and Paste::SYNTAX_LIST[syntax]
-      session_id = request.cookies[ '_ramaze_session_id' ]
-      captcha_answer = request[ 'humanity' ]
-      captcha_passed = false
-      begin
-        open( "http://captchator.com/captcha/check_answer/#{session_id}/#{captcha_answer}" ) do |http|
-          captcha_passed = ( http.read.strip == '1' )
+      catch :not_human do
+        if email and email != ""
+          Ramaze::Log.warn "Decoy e-mail field filled."
+          throw :not_human
         end
-      rescue Exception => e
-        Ramaze::Log.error e
-        # Ignore error and proceed
-      end
-      if captcha_passed
+        
+        session_id = request.cookies[ '_ramaze_session_id' ]
+        captcha_answer = request[ 'humanity' ]
+        begin
+          open( "http://captchator.com/captcha/check_answer/#{session_id}/#{captcha_answer}" ) do |http|
+            if http.read.strip != '1'
+              Ramaze::Log.warn "Captcha failed."
+              throw :not_human
+            end
+          end
+        rescue Exception => e
+          Ramaze::Log.error e
+          # Ignore error and proceed
+        end
         paste = Paste.create :syntax => syntax,
           :text => text,
           :created => Time.now
         redirect R(:/, paste.id)
-      else
-        flash[ :saved_text ] = text
-        flash[ :error_message ] = "You failed to prove your humanity."
-        Ramaze::Log.warn "Captcha failed."
       end
+      
+      flash[ :saved_text ] = text
+      flash[ :error_message ] = "You failed to prove your humanity."
     end
 
     redirect_referrer

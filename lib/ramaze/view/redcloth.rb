@@ -1,16 +1,17 @@
+#          Copyright (c) 2009 Michael Fellinger m.fellinger@gmail.com
+# All files in this distribution are subject to the terms of the Ruby license.
+
 require 'redcloth'
 
 module Ramaze
   module View
     module RedCloth
-      extend Ramaze::View.get(:Erubis)
-
-      def self.render(action, string)
+      def self.render(action, string = nil)
         restrictions = action.variables[:redcloth_options] || []
         rules        = action.variables[:redcloth_options] || []
 
-        # Erubis -> RedCloth -> HTML
-        redcloth = ::RedCloth.new(super, restrictions)
+        erubis = Ramaze::View::Erubis.render(action, string)
+        redcloth = ::RedCloth.new(erubis, restrictions)
         redcloth.to_html(*rules)
       end
     end

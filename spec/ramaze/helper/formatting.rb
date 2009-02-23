@@ -13,9 +13,24 @@ describe 'Helper::Formatting' do
   end
 
   it 'should return difference in time as a string' do
-    time_diff(Time.now-29).should == 'less than a minute'
-    time_diff(Time.now-60).should == '1 minute'
-    time_diff(Time.now, Time.now+29, true).should == 'half a minute'
+    check = lambda{|diff, string| time_diff(Time.now - diff).should == string }
+
+    check[1, 'less than a minute']
+    check[60, '1 minute']
+    check[60 * 50, 'about 1 hour']
+    check[60 * 120, 'about 2 hours']
+    check[60 * 60 * 24, '1 day']
+    check[60 * 60 * 48, '2 days']
+    check[60 * 60 * 24 * 30, 'about 1 month']
+    check[60 * 60 * 24 * 60, '2 months']
+    check[60 * 60 * 24 * 30 * 20, 'about 1 year']
+    check[60 * 60 * 24 * 30 * 42, 'over 3 years']
+
+    time_diff(Time.now, Time.now + 4, true).should == 'less than 5 seconds'
+    time_diff(Time.now, Time.now + 6, true).should == 'less than 10 seconds'
+    time_diff(Time.now, Time.now + 29, true).should == 'half a minute'
+    time_diff(Time.now, Time.now + 50, true).should == 'less than a minute'
+    time_diff(Time.now, Time.now + 66, true).should == '1 minute'
   end
 
   it 'should linkify urls' do
@@ -50,5 +65,17 @@ describe 'Helper::Formatting' do
       {"code"=>0.75, "ramaze"=>0.75, "ruby"=>1.0}
     tagcloud(tags, 0.5, 2.0).should ==
       {"code"=>0.875, "ramaze"=>0.875, "ruby"=>1.25}
+  end
+
+  should 'convert newlines to br tags' do
+    nl2br("foo\nbar\nfoobar").should == 'foo<br />bar<br />foobar'
+    nl2br("foo\nbar\nfoobar", false).should == 'foo<br>bar<br>foobar'
+  end
+
+  should 'obvfuscate email addresses' do
+    obfuscate_email('foo@example.com').
+      should == "<a href=\"mailto:&#102&#111&#111&#064&#101&#120&#097&#109&#112&#108&#101&#046&#099&#111&#109\">&#102&#111&#111&#064&#101&#120&#097&#109&#112&#108&#101&#046&#099&#111&#109</a>"
+    obfuscate_email('foo@example.com', 'mail foo').
+      should == "<a href=\"mailto:&#102&#111&#111&#064&#101&#120&#097&#109&#112&#108&#101&#046&#099&#111&#109\">mail foo</a>"
   end
 end

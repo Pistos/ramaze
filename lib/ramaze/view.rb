@@ -1,3 +1,6 @@
+#          Copyright (c) 2009 Michael Fellinger m.fellinger@gmail.com
+# All files in this distribution are subject to the terms of the Ruby license.
+
 module Ramaze
 
   # This is a container module for wrappers of templating engines and handles
@@ -18,12 +21,11 @@ module Ramaze
     # * XSLT    - this one is just crazy, someone up for the task?
 
     auto_register :Amrita2,    :amrita, :amr, :a2html
-    auto_register :Builder,    :builder
     auto_register :Erubis,     :erubis, :rhtml
     auto_register :Haml,       :haml
     auto_register :Liquid,     :liquid
     auto_register :Maruku,     :mkd, :md
-    auto_register :Nagoro,     :xhtml
+    auto_register :Nagoro,     :xhtml, :nag
     auto_register :RedCloth,   :redcloth
     auto_register :Sass,       :sass
     auto_register :Tenjin,     :rbhtml

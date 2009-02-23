@@ -44,7 +44,7 @@ module Ramaze
     end
 
     # stolen and adapted from rails
-    def time_diff from_time, to_time = Time.now, include_seconds = false
+    def time_diff(from_time, to_time = Time.now, include_seconds = false)
       distance_in_minutes = (((to_time - from_time).abs)/60).round
       distance_in_seconds = ((to_time - from_time).abs).round if include_seconds
 
@@ -121,10 +121,9 @@ module Ramaze
     end
 
     # Maybe port to ruby < 1.8.7 ?
-    def obfuscate_email(string)
-      string = string.to_s
-      text = string.each_byte.map{|c| "&#%03d" % c}.join
-      %(<a href="mailto:#{string}">#{text}</a>)
+    def obfuscate_email(email, text = nil)
+      obfuscated = email.to_s.each_byte.map{|c| "&#%03d" % c}.join
+      %(<a href="mailto:#{obfuscated}">#{text || obfuscated}</a>)
     end
 
     # Returns Hash with tags as keys and their weight as value.

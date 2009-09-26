@@ -164,6 +164,8 @@ module Ramaze
           case obj
           when Array
             ArrayPager.new(obj, @page, @limit)
+          when (defined?(DataMapper::Collection) and DataMapper::Collection)
+            DataMapperPager.new(obj, @page, @limit)
           else
             obj.paginate(@page, @limit)
           end
@@ -196,7 +198,7 @@ module Ramaze
           end
 
           def page_count
-            pages, rest = @array.size.divmod(@limit)
+            pages, rest = size.divmod(@limit)
             rest == 0 ? pages : pages + 1
           end
 
@@ -229,6 +231,30 @@ module Ramaze
           end
 
           include Enumerable
+        end
+
+        # Wrapper for DataMapper::Collection to behave like the Sequel
+        # pagination.
+        # needs 'datamapper' (or 'dm-core' and 'dm-aggregates')
+        class DataMapperPager < ArrayPager
+
+          def initialize(*args)
+            unless defined?(DataMapper::Aggregates)
+              Ramaze::Log.warn "paginate.rb: it is strongly " +
+                               "recommended to require 'dm-aggregates'"
+            end
+
+            super
+          end
+
+          def size
+            @cached_size ||= @array.count
+          end
+
+          def empty?
+            size == 0
+          end
+
         end
 
       end

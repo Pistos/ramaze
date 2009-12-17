@@ -58,25 +58,34 @@ class ProjectCreator
   end
 
   def mkdir(dir)
-    exists = File.directory?(dir)
-    return if exists and amend?
-    return if exists and not force?
-    puts "mkdir(%p)" % dir
+    return unless mkdir?(dir)
+
+    relate = dir.sub("#{target}/", '')
+    puts  "%12s    %s" % ['mkdir', relate]
+
     FileUtils.mkdir_p(dir)
   end
 
+  def mkdir?(dir)
+    exists = File.directory?(dir)
+
+    !exists && amend? or exists && force? or !exists
+  end
+
   def copy(from, to)
-    return unless copy_check(to)
-    puts "copy(%p, %p)" % [from, to]
+    return unless copy?(to)
+
+    relate = to.sub("#{target}/", '')
+    puts  "%12s    %s" % ['create', relate]
+
     FileUtils.cp(from, to, :preserve => true)
     post_process(to)
   end
 
-  def copy_check(to)
-    exists = File.file?(to)
-    return if exists and amend?
-    return if exists and not force?
-    return true
+  def copy?(file)
+    exists = File.file?(file)
+
+    !exists && amend? or exists && force? or !exists
   end
 
   # Think about a useful way to process the generated files it should be

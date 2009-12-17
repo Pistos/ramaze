@@ -16,6 +16,10 @@ class MainController < Ramaze::Controller
     "Hello #{user}"
   end
 
+  def logout
+    httpdigest_logout
+  end
+
 end
 
 class PlainTextController < Ramaze::Controller
@@ -70,14 +74,18 @@ describe Ramaze::Helper::HttpDigest do
       end
     end
   end
-end
-
-__END__
 
   describe 'Digest authentication' do
     behaves_like :rack_test
 
     it 'authenticates a user with a block' do
+      get '/logout'
+      digest_authorize nil, nil
+
+      get '/authenticate'
+      last_response.status.should == 401
+      last_response.body.should == "Unauthorized"
+
       digest_authorize 'foo', 'oof'
       get '/authenticate'
       last_response.status.should == 200
@@ -85,6 +93,13 @@ __END__
     end
 
     it 'fails to authenticate an incorrect password with a block' do
+      get '/logout'
+      digest_authorize nil, nil
+
+      get '/authenticate'
+      last_response.status.should == 401
+      last_response.body.should == "Unauthorized"
+
       digest_authorize 'foo', 'bar'
       get '/authenticate'
       last_response.status.should == 401
@@ -96,52 +111,64 @@ __END__
     behaves_like :rack_test
 
     it 'authenticates a user with the plaintext method' do
+      get '/logout'
+      digest_authorize nil, nil
+
       get '/plaintext/authenticate'
       last_response.status.should == 401
       last_response.body.should == 'Unauthorized'
 
-      authorize 'foo', 'oof'
+      digest_authorize 'foo', 'oof'
       get '/plaintext/authenticate'
       last_response.status.should == 200
       last_response.body.should == "Hello foo"
     end
 
     it 'fails to authenticate an incorrect password with the plaintext method' do
-      authorize 'foo', 'bar'
+      get '/logout'
+      digest_authorize nil, nil
+
+      get '/plaintext/authenticate'
+      last_response.status.should == 401
+      last_response.body.should == "Unauthorized"
+
+      digest_authorize 'foo', 'bar'
       get '/plaintext/authenticate'
       last_response.status.should == 401
       last_response.body.should == "Unauthorized"
     end
   end
 
-  it 'authenticates a user with the password lookup method' do
-    got = get_auth( '/lookup/authenticate', 'foo', 'oof' )
-    got.status.should == 200
-    got.body.should == "Hello foo"
-  end
+  describe 'Password lookup authentication' do
+    behaves_like :rack_test
 
-  it 'fails to authenticate an incorrect password with the password lookup method' do
-    got = get_auth( '/lookup/authenticate', 'foo', 'bar' )
-    got.status.should == 401
-    got.body.should == "Unauthorized"
-  end
+    it 'authenticates a user with the password lookup method' do
+      get '/logout'
+      digest_authorize nil, nil
 
-  it 'authenticates a user with a block using auth-int' do
-    got = get_auth( '/authenticate', 'foo', 'oof', 'auth-int' )
-    got.status.should == 200
-    got.body.should == "Hello foo"
-  end
+      get '/lookup/authenticate'
+      last_response.status.should == 401
+      last_response.body.should == "Unauthorized"
 
-  it 'authenticates a user with the plaintext method using auth-int' do
-    got = get_auth( '/plaintext/authenticate', 'foo', 'oof', 'auth-int' )
-    got.status.should == 200
-    got.body.should == "Hello foo"
-  end
+      digest_authorize 'foo', 'oof'
+      get '/lookup/authenticate'
+      last_response.status.should == 200
+      last_response.body.should == "Hello foo"
+    end
 
-  it 'authenticates a user with the password lookup method using auth-int' do
-    got = get_auth( '/lookup/authenticate', 'foo', 'oof', 'auth-int' )
-    got.status.should == 200
-    got.body.should == "Hello foo"
+    it 'fails to authenticate an incorrect password with the password lookup method' do
+      get '/logout'
+      digest_authorize nil, nil
+
+      get '/lookup/authenticate'
+      last_response.status.should == 401
+      last_response.body.should == "Unauthorized"
+
+      digest_authorize 'foo', 'bar'
+      get '/lookup/authenticate'
+      last_response.status.should == 401
+      last_response.body.should == "Unauthorized"
+    end
   end
 
 end

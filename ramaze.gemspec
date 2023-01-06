@@ -49,7 +49,6 @@ Gem::Specification.new do |s|
   # C extensions don't work reliably on jruby and Travis CI doesn't have them
   # enabled.
   if !RUBY_DESCRIPTION.include?('jruby')
-    s.add_development_dependency 'localmemcache'
     s.add_development_dependency 'nokogiri'
     s.add_development_dependency 'rdiscount'
     s.add_development_dependency 'sqlite3'

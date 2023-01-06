@@ -33,7 +33,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'moneta'
   s.add_development_dependency 'mustache'
   s.add_development_dependency 'rack-test'
-  s.add_development_dependency 'redis'
+  s.add_development_dependency 'redis-namespace'
   s.add_development_dependency 'Remarkably'
   s.add_development_dependency 'sass'
   s.add_development_dependency 'sequel'

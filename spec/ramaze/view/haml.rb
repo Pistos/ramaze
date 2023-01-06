@@ -72,7 +72,7 @@ describe Ramaze::View::Haml do
   <li>
     <a href='/external'>External template</a>
   </li>
-</ul>"
+</ul>".gsub(/\n\s+/, "\n")
   end
 
   should 'render external template' do
@@ -87,7 +87,7 @@ describe Ramaze::View::Haml do
   <body>
     <h1>Haml Template</h1>
   </body>
-</html>"
+</html>".gsub(/\n\s+/, "\n")
   end
 
   should 'render external template with instance variables' do
@@ -97,7 +97,7 @@ describe Ramaze::View::Haml do
     got.body.strip.should ==
 "<div>
   3
-</div>"
+</div>".gsub(/\n\s+/, "\n")
   end
 
   should 'render the wrapped view twice even with caching' do

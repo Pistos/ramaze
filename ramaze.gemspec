@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'ramaze'
-  s.version     = '2012.12.08'
+  s.version     = '2023.01.06'
   s.date        = Time.now.strftime('%Y-%m-%d')
   s.authors     = ['Michael \'manveru\' Fellinger', 'Yorick Peterse']
   s.email       = ['m.fellinger@gmail.com', 'yorickpeterse@gmail.com']
@@ -14,10 +14,9 @@ Gem::Specification.new do |s|
     %w[Gemfile Rakefile README.md ramaze.gemspec]
   ).sort
 
-  s.has_rdoc                  = 'yard'
   s.executables               = ['ramaze']
 
-  s.add_dependency 'innate', '>= 2012.12'
+  s.add_dependency 'innate', '>= 2023.01.05'
   s.add_dependency 'rake'
 
   s.add_development_dependency 'bacon'

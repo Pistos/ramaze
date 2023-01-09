@@ -61,7 +61,7 @@ module Ramaze
     roots, publics = options[:roots], options[:publics]
 
     joined  = roots.map { |r| publics.map { |p| File.join(r, p) } }
-    joined  = joined.flatten.map { |p| Rack::File.new(p) }
+    joined  = joined.flatten.map { |p| Rack::Files.new(p) }
     current = Current.new(Route.new(AppMap), Rewrite.new(AppMap))
 
     return Rack::Cascade.new(joined << current, [404, 405])

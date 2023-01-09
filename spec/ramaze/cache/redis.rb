@@ -3,7 +3,7 @@ spec_require 'redis'
 
 spec_precondition 'redis is running' do
   cache = Redis.new
-  cache['active'] = true
+  "OK" == cache.set('testkey', 'testval')
 end
 
 describe Ramaze::Cache::Redis do

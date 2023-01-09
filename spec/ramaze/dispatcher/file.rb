@@ -3,11 +3,6 @@
 
 require File.expand_path('../../../../spec/helper', __FILE__)
 
-# This spec more or less tries to ensure that we integrate with rack and
-# rack-contrib in regards to static file serving.
-
-spec_require 'rack/contrib'
-
 Ramaze.middleware(:spec) do
   use Rack::ConditionalGet
   use Rack::ETag

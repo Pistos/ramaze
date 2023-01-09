@@ -1,4 +1,4 @@
-require 'redis'
+require 'redis-namespace'
 
 module Ramaze
   class Cache
@@ -102,8 +102,8 @@ module Ramaze
         options[:namespace] = [
           'ramaze', hostname, username, appname, cachename
         ].compact.join(':')
-
-        @client = ::Redis.new(options)
+        redis_connection = ::Redis.new
+        @client = ::Redis::Namespace.new(options[:namespace], redis: redis_connection)
       end
 
       ##
@@ -123,7 +123,7 @@ module Ramaze
       # @param  [Array] keys An array of key names to remove.
       #
       def cache_delete(*keys)
-        @client.del(*keys.map{|key| namespaced_key(key) })
+        @client.del(*keys)
       end
 
       ##
@@ -136,7 +136,7 @@ module Ramaze
       # @return [Mixed]
       #
       def cache_fetch(key, default = nil)
-        value = @client.get(namespaced_key(key))
+        value = @client.get(key)
         value.nil? ? default : ::Marshal.load(value)
       end
 
@@ -153,14 +153,11 @@ module Ramaze
       def cache_store(key, value, options = {})
         ttl = options[:ttl] || @options[:expires_in]
 
-        @client.setex(namespaced_key(key), ttl, ::Marshal.dump(value))
+        @client.setex(key, ttl, ::Marshal.dump(value))
 
         return value
       end
-
-      def namespaced_key(key)
-        [options[:namespace], key].join(':')
-      end
+      
     end # Redis
   end # Cache
 end # Ramaze

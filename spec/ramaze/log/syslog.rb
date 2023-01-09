@@ -56,8 +56,17 @@ describe 'Syslog' do
     }
     logpipe[1].close
     Process.waitpid(child)
-
-    logpipe[0].gets.should == "ramaze_syslog_test[#{child}]: #{msg}\n"
+    label = case priority
+            # when 'debug', 'info', 'error'
+            #   priority
+            when :dev
+              'debug'
+            when :warn
+              'warning'
+            else
+              priority.to_s
+            end
+    logpipe[0].gets.slice(/ramaze.*/).should == "ramaze_syslog_test[#{child}] <#{label.capitalize}>: #{msg}"
   end
 
   it 'should handle debug' do

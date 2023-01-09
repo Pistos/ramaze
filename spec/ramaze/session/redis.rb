@@ -2,8 +2,8 @@ require File.expand_path('../../../../spec/helper', __FILE__)
 spec_require 'redis'
 
 spec_precondition 'Redis is running' do
-  cache           = Redis.new
-  cache['active'] = true
+  cache = Redis.new
+  "OK" == cache.set('testkey', 'testval')
 end
 
 class SpecSession < Ramaze::Controller

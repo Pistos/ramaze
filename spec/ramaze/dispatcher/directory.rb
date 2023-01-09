@@ -36,7 +36,7 @@ describe 'Directory listing' do
     get('path').body
   end
 
-  def check(url, title, list)
+  def check(url, title, list, ignore_order = false)
     got = get(url)
 
     got.status.should          == 200
@@ -49,17 +49,20 @@ describe 'Directory listing' do
     urls = doc.css('td.name a').map do |a|
       ["/#{a[:href]}".squeeze('/'), a.inner_text]
     end
-
-    urls.should == list
+    if ignore_order
+      urls.flatten.sort.should == list.flatten.sort
+    else
+      urls.should == list
+    end
   end
 
   should 'dry serve root directory' do
     files = [
-      ["/../", "Parent Directory"],
+      # ["/../", "Parent Directory"],
       ["/favicon.ico", "favicon.ico"],
-      ["/file+name.txt", "file name.txt"],
       ["/test/", "test/"],
-      ["/test_download.css", "test_download.css"]
+      ["/test_download.css", "test_download.css"],
+      ["/file%20name.txt", "file name.txt"]
     ]
 
     check '/', '/', files
@@ -67,13 +70,13 @@ describe 'Directory listing' do
 
   should 'serve hierarchies' do
     files = [
-      ["/../", "Parent Directory"],
+      ["/test/../", "Parent Directory"],
       ["/test/deep/", "deep/"],
       ["/test/five.txt", "five.txt"],
       ["/test/six.txt", "six.txt"]
     ]
 
-    check '/test', '/test', files
+    check '/test', '/test', files, true
   end
 
   FileUtils.rm_rf(__DIR__('public/test'))

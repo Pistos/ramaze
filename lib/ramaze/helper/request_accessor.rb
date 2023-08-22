@@ -8,7 +8,7 @@ module Ramaze
       }.flatten.uniq
 
       methods.each do |method|
-        next if method == :intialize
+        next if method == :initialize
         if method =~ /=/
           eval("def %s(a) request.%s a; end" % [method, method])
         else

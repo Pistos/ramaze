@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'ramaze'
-  s.version     = '2023.01.06'
+  s.version     = '2025.03.13'
   s.date        = Time.now.strftime('%Y-%m-%d')
   s.authors     = ['Michael \'manveru\' Fellinger', 'Yorick Peterse']
   s.email       = ['m.fellinger@gmail.com', 'yorickpeterse@gmail.com']
@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
 
   s.executables               = ['ramaze']
 
-  s.add_dependency 'innate', '>= 2023.01.05'
+  s.add_dependency 'innate', '>= 2025.03.13'
   s.add_dependency 'rake'
 
   s.add_development_dependency 'bacon'
